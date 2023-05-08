@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class ParkingLot {
-	public Map<Integer, Boolean> slots = new HashMap<Integer, Boolean>();
-	public Map<Integer, String> slotVsUsernameMap = new HashMap<>();
-	 public Map<Integer, String> slotVsVehicleNumberMap = new HashMap<Integer, String>();
-	public Map<String, String> vehicleNumberVsUserNameMap = new HashMap<>();
+    public Map<Integer, Boolean> slots = new HashMap<Integer, Boolean>();
+    public Map<Integer, String> slotVsUsernameMap = new HashMap<>();
+    public Map<Integer, String> slotVsVehicleNumberMap = new HashMap<Integer, String>();
+    public Map<String, String> vehicleNumberVsUserNameMap = new HashMap<>();
     private static int slot;
     private int gateNumber;
     protected String adminPassword = "password";
@@ -42,8 +42,7 @@ public class ParkingLot {
     {   
         while (true)
         {
-        	System.out.println();
-            System.out.println("Enter 1 for admin login, 2 for user login, 3 for insurance or 4 to exit");
+            System.out.println("\n"+"Enter 1 for admin login, 2 for user login, 3 for insurance or 4 to exit");
             int choice = 0;
             try 
             {
@@ -179,8 +178,7 @@ public class ParkingLot {
     		        		 {
     		        			 try 
     	    		        	 {
-    		        				 System.out.println();
-    		    	    		     System.out.print("Enter the gate number where you want to park (1-3): ");
+    		    	    		     System.out.print("\n"+"Enter the gate number where you want to park (1-3): ");
     		        		         gateNumber = scanner.nextInt();
     		        		         scanner.nextLine();
     		        		         if (gateNumber < 1 || gateNumber > 3) 
