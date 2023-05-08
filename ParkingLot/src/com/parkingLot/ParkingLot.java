@@ -22,7 +22,6 @@ public class ParkingLot {
     private int capacity = 12 * 498; // 12 floors with 498 slots each
     private int floors = 12;
     
-    
     Scanner scanner = new Scanner(System.in);
 
     public ParkingLot() 
