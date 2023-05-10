@@ -4,11 +4,12 @@ import java.util.Map;
 
 public class UnparkVehicle {
 	
-    ParkingLot parkingLot = new ParkingLot();
+	ParkingLot parkingLot = ParkingLot.getInstance();
 	public void unpark(String vehicleNumber) throws Exception 
 	{
+		int vehicleChoice = parkingLot.userVehicleChoice;
 		int slot = -1;   	
-		for (Map.Entry<Integer, String> entry : parkingLot.slotVsVehicleNumberMap.entrySet()) 
+		for (Map.Entry<Integer, String> entry : parkingLot.getVehicleNumberMap(vehicleChoice).entrySet()) 
 		{
 		    if (entry.getValue().equals(vehicleNumber)) 
 		    {
@@ -16,19 +17,19 @@ public class UnparkVehicle {
 		        break;
 		    }
 		}
-		if (!parkingLot.slotVsVehicleNumberMap.get(slot).equals(vehicleNumber)) 
+		if (!parkingLot.getVehicleNumberMap(vehicleChoice).get(slot).equals(vehicleNumber)) 
 		{
 		    throw new Exception("Vehicle not found in parking lot");
 		}
-		if (!parkingLot.slots.get(slot)) 
+		if (!parkingLot.getSlotMap(vehicleChoice).get(slot)) 
 		{
 		    throw new Exception("Slot is already empty");
 		}	
-		parkingLot.slots.put(slot, false);
+		parkingLot.getSlotMap(vehicleChoice).put(slot, false);
 		System.out.println("Vehicle unparked from slot " +  slot);
-		parkingLot.slotVsUsernameMap.remove(slot);
-		parkingLot.slotVsVehicleNumberMap.remove(slot);
-		parkingLot.vehicleNumberVsUserNameMap.remove(parkingLot.username);
-		parkingLot.occupied--;
+		parkingLot.getSlotUsernameMap(vehicleChoice).remove(slot);
+		parkingLot.getVehicleNumberMap(vehicleChoice).remove(slot);
+		parkingLot.getVehicleUsernameMap(vehicleChoice).remove(parkingLot.username);
+		parkingLot.decrementOccupiedSlots(vehicleChoice);
 	}
 }
