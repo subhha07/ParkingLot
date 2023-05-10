@@ -1,40 +1,62 @@
 package com.parkingLot;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ParkVehicle {
-	ParkingLot parkingLot = new ParkingLot();
-	private int gates = 3;
-	
-	   
-	    private int getFirstAvailableSlot(int gateNumber, int floorNumber) 
-	    {
-	        int slotsPerGate = 166;
-	        int totalSlotsPerFloor = slotsPerGate * gates;
-	        int startSlot = (gateNumber - 1) * slotsPerGate + 1 + floorNumber * totalSlotsPerFloor;
-	        int endSlot = gateNumber * slotsPerGate + floorNumber * totalSlotsPerFloor;
+	ParkingLot parkingLot = ParkingLot.getInstance();
+    private int gates = 3;
+    private Map<Integer, Boolean> slots = new HashMap<Integer, Boolean>();
 
-	        for (int i = startSlot; i <= endSlot; i++) 
-	        {
-	            if (!parkingLot.slots.get(i)) 
-	            {
-	                return i;
-	            }
-	        }
-	        return -1;
-	    }
-
-
-
-
-    public int park(int gateNumber) throws Exception
+    private int getFirstAvailableSlot(int gateNumber, int floorNumber, int vehicleChoice) 
     {
-    	int selectedGateNumber = gateNumber;
-        if (parkingLot.vehicleNumber.isEmpty()) 
+        int slotsPerGate;
+
+        switch (vehicleChoice) 
+        {
+            case 1:
+                slotsPerGate = 166;
+                break;
+            case 2:
+                slotsPerGate = 416;
+                break;
+            case 3:
+                slotsPerGate = 50;
+                break;
+            case 4:
+                slotsPerGate = 20;
+                break;
+            default:
+                return -1;
+        }
+
+        int totalSlotsPerFloor = slotsPerGate * gates;
+        int startSlot = (gateNumber - 1) * slotsPerGate + 1 + floorNumber * totalSlotsPerFloor;
+        int endSlot = gateNumber * slotsPerGate + floorNumber * totalSlotsPerFloor;
+
+        for (int i = startSlot; i <= endSlot; i++) 
+        {
+            if (!parkingLot.getSlotMap(vehicleChoice).get(i)) 
+            {
+                return i;
+            }
+        }
+        
+
+        return -1;
+    }
+
+    public int park(int gateNumber) throws Exception 
+    {
+        int vehicleChoice = parkingLot.userVehicleChoice;
+        String vehicleNumber = parkingLot.vehicleNumber;
+
+        if (vehicleNumber.isEmpty()) 
         {
             throw new Exception("Vehicle number cannot be empty!");
         }
-        for (Map.Entry<Integer, String> entry : parkingLot.slotVsVehicleNumberMap.entrySet()) 
+
+        for (Map.Entry<Integer, String> entry : parkingLot.getVehicleNumberMap(vehicleChoice).entrySet()) 
         {
             if (entry.getValue().equals(parkingLot.vehicleNumber))
             {
@@ -44,21 +66,15 @@ public class ParkVehicle {
 
         int floorNumber = 0;
         int slot = -1;
-
         int initialGateNumber = gateNumber;
+
         while (floorNumber <= 12 && slot == -1) 
         {
-            slot = getFirstAvailableSlot(gateNumber, floorNumber);
+            slot = getFirstAvailableSlot(gateNumber, floorNumber, vehicleChoice);
 
-            if (slot == -1) {
-                if (gateNumber == 3) 
-                {
-                    gateNumber = 1;
-                } 
-                else 
-                {
-                    gateNumber++;
-                }
+            if (slot == -1) 
+            {
+                gateNumber = (gateNumber == 3) ? 1 : gateNumber + 1;
 
                 if (gateNumber == initialGateNumber) 
                 {
@@ -72,16 +88,26 @@ public class ParkVehicle {
             throw new Exception("Sorry, parking lot is full");
         }
 
-        parkingLot.slots.put(slot, true);
-        if(selectedGateNumber!=gateNumber) 
+        parkingLot.getSlotMap(vehicleChoice).put(slot, true);
+//        System.out.println(parkingLot.getSlotMap(vehicleChoice));
+
+        if (initialGateNumber != gateNumber) 
         {
-        	System.out.println("Parking lot is full at gate number " + selectedGateNumber );
+            System.out.println("Parking lot is full at gate number " + initialGateNumber);
         }
-        System.out.println("Parking vehicle at gate " + gateNumber + " in slot " + slot + " on floor " + floorNumber);
-        parkingLot.slotVsUsernameMap.put(slot, parkingLot.username);
-        parkingLot.slotVsVehicleNumberMap.put(slot, parkingLot.vehicleNumber);
-        parkingLot.vehicleNumberVsUserNameMap.put(parkingLot.username, parkingLot.vehicleNumber);
-        parkingLot.occupied++;
+
+        parkingLot.getSlotUsernameMap(vehicleChoice).put(slot, parkingLot.username);
+        parkingLot.getVehicleNumberMap(vehicleChoice).put(slot, vehicleNumber);
+        parkingLot.getVehicleUsernameMap(vehicleChoice).put(parkingLot.username, vehicleNumber);
+        parkingLot.incrementOccupiedSlots(vehicleChoice);
+        
+
+        if(floorNumber>=1 && floorNumber<=12) {
+        	System.out.println("Parking vehicle at gate " + gateNumber + " in slot " + slot + " on floor " + floorNumber);
+        }
+        System.out.println("Parking vehicle at gate " + gateNumber + " in slot " + slot + " on Groundfloor");
+        
+
         return slot;
     }
 }
